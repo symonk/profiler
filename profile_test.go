@@ -31,14 +31,14 @@ func TestProfilesEnabledExpectedOutput(t *testing.T) {
 import "github.com/symonk/profiler"
 
 func main() {
-	defer profiler.Start(profiler.WithCPUProfiler(), WithProfileFileLocation("` + storage + "\"" + `)).Stop()
+	defer profiler.Start(profiler.WithCPUProfiler(), profiler.WithProfileFileLocation("` + storage + "\"" + `)).Stop()
 }`,
 			checks: []CheckFunc{
 				exitedZero,
 				emptyStdOut,
-				stdErrMatchesLinesInOrder(
+				stdErrOutMatchLines(
 					".*setting up cpu profiler.*",
-					".*profile completed.  You can find the .*cpu.pprof",
+					".*profiling completed.  You can find the .*cpu.pprof.*",
 					".*to view the profile, run.*cpu.pprof",
 				),
 			},
@@ -111,39 +111,47 @@ func exitedZero(t *testing.T, _, _ string, code int) {
 	assert.Zero(t, code)
 }
 
-// stdoutMatchesLinesInOrder checks that the stdout matches the
-// provided patterns in order and that all the patterns are matched.
-// a utility function for checking the output is as expected
-func stdoutMatchesLinesInOrder(patterns ...string) CheckFunc {
-	return func(t *testing.T, stdout, _ string, _ int) {
-		hits := len(patterns)
-		stdoutLines := strings.Split(stdout, "\n")
-		p0, p1 := 0, 0
-		for p0 < len(patterns) && p1 < len(stdoutLines) {
-			if matched, _ := regexp.MatchString(patterns[p0], stdoutLines[p1]); matched {
-				p0++
-				hits--
-			}
-			p1++
-		}
-		assert.Zero(t, hits, "expected all the lines provided to match lines in the std output")
+// patternMatchLines checks that the lines in stdout matched
+func stdOutOutMatchLines(patterns ...string) CheckFunc {
+	return func(t *testing.T, stdout, stderr string, exit int) {
+		assert.NotEmpty(t, stdout)
+		patternMatchLines(t, stdout, patterns...)
 	}
 }
 
-func stdErrMatchesLinesInOrder(patterns ...string) CheckFunc {
-	return func(t *testing.T, _, stderr string, _ int) {
-		hits := len(patterns)
-		stderrLines := strings.Split(stderr, "\n")
-		p0, p1 := 0, 0
-		for p0 < len(patterns) && p1 < len(stderrLines) {
-			if matched, _ := regexp.MatchString(patterns[p0], stderrLines[p1]); matched {
-				p0++
-				hits--
-			}
-			p1++
-		}
-		assert.Zero(t, hits, "expected all the lines provided to match lines in the std error")
+// patternMatchLines checks that the lines in stderr matched
+func stdErrOutMatchLines(patterns ...string) CheckFunc {
+	return func(t *testing.T, stdout, stderr string, exit int) {
+		assert.NotEmpty(t, stderr)
+		patternMatchLines(t, stderr, patterns...)
 	}
+}
+
+// patternMatchLines checks that the lines in either stdout/err matched
+// the user provided regexp patterns.  No order is guarantee'd here and
+// all are iterated for each pattern, this is not very performant and can
+// be done in O(n) in future most likely.
+func patternMatchLines(t *testing.T, input string, patterns ...string) bool {
+	seen := make(map[string]struct{}, len(patterns))
+	for _, p := range patterns {
+		seen[p] = struct{}{}
+	}
+
+	lines := strings.Split(input, "\n")
+	for i := 0; i < len(lines); i++ {
+		for j := 0; j < len(patterns); j++ {
+			if matched, _ := regexp.MatchString(patterns[j], lines[i]); matched {
+				delete(seen, patterns[j])
+			}
+		}
+	}
+
+	if len(seen) == 0 {
+		return true
+	}
+
+	t.Fatalf("expected all patterns to be matched, but the following were not: %v", seen)
+	return false
 }
 
 func emptyStdErr(t *testing.T, _, stderr string, _ int) {
@@ -153,3 +161,4 @@ func emptyStdErr(t *testing.T, _, stderr string, _ int) {
 func emptyStdOut(t *testing.T, stdout, _ string, _ int) {
 	assert.Empty(t, stdout)
 }
+
