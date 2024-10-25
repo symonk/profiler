@@ -139,7 +139,9 @@ func main() {
 
 ### :seven: Mutex Profiling
 
-...
+Mutex profiling differs from block profiling in the sense that block profiling records how long 
+a goroutine took to acquire a `.Lock()` but the mutex profile tracks how long a goroutine was
+waiting for an `.Unlock()`.
 
 -----
 
