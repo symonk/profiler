@@ -3,11 +3,14 @@
 `profiler` is a utility library to easily enable various level of profiling for go programs.
 The various modes available are outlined below.
 
-> [!NOTE] Some functional options change the behaviour of various profiling setups.
+> [!TIP] 
+> Some functional options change the behaviour of various profiling setups.
 
-> [!NOTE] By default `cpu profiling` is enabled if no profile is provided.
+> [!TIP] 
+> By default `cpu profiling` is enabled if no profile is provided.
 
-> [!NOTE] By default the profile files are written to the directory executing your program.
+> [!TIP] 
+> By default the profile files are written to the directory executing your program.
 
 -----
 
