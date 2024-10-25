@@ -92,8 +92,8 @@ func goroutineStrategyFn(p *Profiler) (FinalizerFunc, error) {
 
 func threadCreateStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ThreadCreateFileName)
-	pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
 	return func() {
+		pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
 		p.profileFile.Close()
 	}, nil
 }

@@ -59,9 +59,17 @@ func WithMemoryProfilingRate(rate int) ProfileOption {
 	}
 }
 
+// TODO: Doc
 func WithBlockProfiler() ProfileOption {
 	return func(p *Profiler) {
 		p.profileMode = BlockMode
+	}
+}
+
+// TODO: Doc
+func WithThreadProfiler() ProfileOption {
+	return func(p *Profiler) {
+		p.profileMode = ThreadCreateMode
 	}
 }
 

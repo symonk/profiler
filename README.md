@@ -110,7 +110,24 @@ func main() {
 
 ### :five: Thread Profiling
 
-...
+Thread profiling shows stack traces of code that caused new OS level threads to be created by the
+go scheduler.  This is implemented in this library but it has been broken since 2013.
+
+> [!CAUTION]
+> This has been broken since 2013, do not use it!
+
+```go
+package main
+
+import (
+    "github.com/symonk/profiler"
+)
+
+func main() {
+    defer profiler.Start(profiler.WithThreadProfiler()).Stop()
+    /* your code here */
+}
+```
 
 -----
 
@@ -135,4 +152,18 @@ func main() {
 
 ## Available Options
 
+* `WithAllocProfiler` => Enables allocation (memory) profiling.
+* `WithBlockProfiler` => Enables block profiling.
+* `WithCPUProfiler` => Enables CPU profiling (default).
+* `WithCallback` => User defined callback that has the profiler in scope, invoked after teardown.
+* `WithClockProfiling` => Enables CPU on & off profiling (non stdlib).
+* `WithHeapProfiler` =>  Enables heap (memory) profiling.
+* `WithMemoryProfilingRate` => Sets the profiling rate for memory related profiling samples.
+* `WithMutexFraction` => Sets the fraction rate used in conjunction with mutex profiling.
+* `WithProfileFileLocation` => Sets the custom folder location for the pprof / trace files. 
+* `WithQuietOutput` => Suppresses writing to stdout/printing.
+* `WithRealTimeData` => Spins a http server for the lifetime of the profiling for real curl/fetching if desired.
+* `WithThreadProfiler` => Enables the os thread creation profiling.
+* `WithTracing` => Enables the tracing.
+* `WithoutSignalHandling` => Prevents the profiler tool signal handling, allow more fine grained user control.
 
