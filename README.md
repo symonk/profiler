@@ -1,7 +1,13 @@
 ## Profiler :star:
 
 `profiler` is a utility library to easily enable various level of profiling for go programs.
-The various modes available are:
+The various modes available are outlined below.
+
+> [!NOTE] Some functional options change the behaviour of various profiling setups.
+
+> [!NOTE] By default `cpu profiling` is enabled if no profile is provided.
+
+> [!NOTE] By default the profile files are written to the directory executing your program.
 
 -----
 
@@ -10,6 +16,16 @@ The various modes available are:
 Profiling CPU can help identify areas of your code where most CPU cycle execution time is spent.  For
 programs with a lot of IO wait etc, the graph may not be extremely useful, trace may be of
 better benefit there.
+
+```go
+import (
+    "github.com/symonk/profiler"
+)
+
+func main() {
+    defer profiler.Start(profiler.WithCPUProfiler()).Stop()
+}
+```
 
 ### :two: Heap Profiling 
 
@@ -54,42 +70,6 @@ program has began (including garbage collected bytes).
 
 -----
 
-
-## Quick Start 
-
-```go
-package main
-
-import (
-    "github.com/symonk/profiler
-)
-
-/*
-By default, calling profiler.Start() will enable CPU profiling, but for verbosity
-we will include it in this example.  Similarly all profile files are written to
-the executing directory by default unless options for file location are provided.
-
-All of the examples are outlined in a single main() call below, however you should
-typically avoid trying to profile more than one thing at once, use them as a 
-reference.
-*/
-
-func main() {
-    // CPU Profiling writing to a custom location for the cpu.pprof file
-    defer profiler.Start(profiler.WithCPUProfiler(), profiler.WithProfileFileLocation("/tmp/profiles")).Stop()
-
-    // Heap Profiling writing to the current directory
-    defer profiler.Start(profiler.WithHeapMemoryProfiling()).Stop()
-
-    // Allocation profiling writing to the current directory
-    defer profiler.Start(profiler.WithAllocMemoryProfiling()).Stop()
-
-    // Block profiling writing to the current directory
-    
-}
-```
-
-----
 
 ## Available Options
 
