@@ -6,12 +6,6 @@ assortment of options and configurations as well as various non stdlib options s
 wall clock option, which pieces together a single `.pprof` file which includes both cpu `ON` and `OFF`
 data.  A basic example for each of the profilers is outlined below.
 
-> [!IMPORTANT] 
-> By default `cpu profiling` is enabled if no profile is provided.
-
-> [!IMPORTANT] 
-> By default the profile files are written to your current working directory.
-
 -----
 
 ### :one: CPU Profiling
@@ -75,6 +69,7 @@ func main() {
     defer profiler.Start(profiler.WithAllocProfiler()).Stop()
     /* your code here */
 }
+```
 
 ------
 
