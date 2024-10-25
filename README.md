@@ -76,7 +76,7 @@ func main() {
 ### :four: Block Profiling
 
 Block profiling captures how long a program spends off CPU blocked by either a mutex or a channel
-operation.  The following things cases are measured:
+operation.  The following events are recorded:
 
  * `select` operations
  * `channel send` operations
