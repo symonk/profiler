@@ -22,16 +22,16 @@ func WithCPUProfiler() ProfileOption {
 	}
 }
 
-// WithHeapMemoryProfiling enables the Heap Profiler.
+// WithHeapProfiler enables the Heap Profiler.
 // Heap Profiling is useful for determining where memory is
 // being allocated and where it is being retained.
-func WithHeapMemoryProfiling() ProfileOption {
+func WithHeapProfiler() ProfileOption {
 	return func(p *Profiler) {
 		p.profileMode = MemoryHeapMode
 	}
 }
 
-// WithAllocMemoryProfiling enables the Alloc Profiler.
+// WithAllocProfiler enables the Alloc Profiler.
 // Alloc Profiling is useful for determining where memory is
 // being allocated and where it is being retained.
 // This is different to Heap Profiling as it will show you
@@ -41,7 +41,7 @@ func WithHeapMemoryProfiling() ProfileOption {
 // This is only available in Go 1.12 and later.
 // The rate at which the profiler samples memory allocations
 // can be set with the WithMemoryProfilingRate option.
-func WithAllocMemoryProfiling() ProfileOption {
+func WithAllocProfiler() ProfileOption {
 	return func(p *Profiler) {
 		p.profileMode = MemoryAllocMode
 	}
@@ -56,6 +56,12 @@ func WithAllocMemoryProfiling() ProfileOption {
 func WithMemoryProfilingRate(rate int) ProfileOption {
 	return func(p *Profiler) {
 		p.memoryProfileRate = rate
+	}
+}
+
+func WithBlockProfiler() ProfileOption {
+	return func(p *Profiler) {
+		p.profileMode = BlockMode
 	}
 }
 

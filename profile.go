@@ -9,8 +9,6 @@ import (
 	"strings"
 	"sync/atomic"
 	"syscall"
-
-	"github.com/symonk/profiler/internal"
 )
 
 const (
@@ -124,7 +122,7 @@ func (p *Profiler) Stop() {
 // not to be confused with the folder location provided by the functional
 // options.
 func (p *Profiler) SetProfileFile(name string) {
-	profileFile, err := internal.CreateProfileFile(p.profileFolder, name)
+	profileFile, err := CreateProfileFile(p.profileFolder, name)
 	if err != nil {
 		die(err.Error())
 	}

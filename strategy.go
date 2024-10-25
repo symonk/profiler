@@ -43,8 +43,9 @@ func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
-	pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
 	return func() {
+		pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
+		runtime.GC()
 		p.profileFile.Close()
 		runtime.MemProfileRate = rate
 	}, nil
@@ -54,8 +55,9 @@ func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
-	pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
 	return func() {
+		pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
+		runtime.GC()
 		p.profileFile.Close()
 		runtime.MemProfileRate = rate
 	}, nil
@@ -71,9 +73,12 @@ func mutexStrategyFn(p *Profiler) (FinalizerFunc, error) {
 
 func blockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(BlockFileName)
-	pprof.Lookup("block").WriteTo(p.profileFile, 0)
+	// for now, we do not allow customising the runtime.SetBlockProfileRate
+	// if it is useful in future, change is welcome here.
 	return func() {
+		pprof.Lookup("block").WriteTo(p.profileFile, 0)
 		p.profileFile.Close()
+		runtime.SetBlockProfileRate(0)
 	}, nil
 }
 
