@@ -26,7 +26,7 @@ func TestProfilesEnabledExpectedOutput(t *testing.T) {
 		source string
 		checks []CheckFunc
 	}{
-		"cpu enabled successfully (verbose)": {
+		"cpu enabled successfully": {
 			source: `package main
 import "github.com/symonk/profiler"
 
@@ -40,6 +40,42 @@ func main() {
 					".*setting up cpu profiler.*",
 					".*profiling completed.  You can find the .*cpu.pprof.*",
 					".*to view the profile, run.*cpu.pprof",
+				),
+			},
+		},
+
+		"heap profiling enabled successfully": {
+			source: `package main
+import "github.com/symonk/profiler"
+
+func main() {
+	defer profiler.Start(profiler.WithHeapMemoryProfiling(), profiler.WithProfileFileLocation("` + storage + "\"" + `)).Stop()}
+`,
+			checks: []CheckFunc{
+				exitedZero,
+				emptyStdOut,
+				stdErrOutMatchLines(
+					".*setting up memory\\[heap\\] profiler.*",
+					".*profiling completed.  You can find the .*memory.pprof.*",
+					".*to view the profile, run.*memory.pprof",
+				),
+			},
+		},
+
+		"alloc profiling enabled successfully": {
+			source: `package main
+import "github.com/symonk/profiler"
+
+func main() {
+	defer profiler.Start(profiler.WithAllocMemoryProfiling(), profiler.WithProfileFileLocation("` + storage + "\"" + `)).Stop()}
+`,
+			checks: []CheckFunc{
+				exitedZero,
+				emptyStdOut,
+				stdErrOutMatchLines(
+					".*setting up memory\\[alloc\\] profiler.*",
+					".*profiling completed.  You can find the .*memory.pprof.*",
+					".*to view the profile, run.*memory.pprof",
 				),
 			},
 		},
