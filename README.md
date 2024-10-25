@@ -96,7 +96,8 @@ import (
 )
 
 func main() {
-    defer profiler.Start(profiler.WithBlockProfiler(), profiler.WithBlockProfileRate(100_000_000)).Stop()
+    defer profiler.Start(profiler.WithBlockProfiler()).Stop()
+    /* your code here */
 }
 ```
 
