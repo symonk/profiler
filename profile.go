@@ -26,6 +26,7 @@ const (
 	MutexFileName        = "mutex.pprof"
 	ThreadCreateFileName = "threadcreate.pprof"
 	TraceFileName        = "trace.out"
+	ClockFileName        = "clock.pprof"
 )
 
 // FinalizerFunc is a function that is invokved during the teardown period
@@ -49,6 +50,7 @@ const (
 	MutexMode
 	ThreadCreateMode
 	TraceMode
+	ClockMode
 )
 
 // profileActive is used as a flag to determine if a profiling

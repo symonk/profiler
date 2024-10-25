@@ -28,19 +28,31 @@ program has began (including garbage collected bytes).
 
 ...
 
+-----
+
 ### :five: Thread Profiling
 
 ...
+
+-----
 
 ### :six: Goroutine Profiling
 
 ...
 
+-----
+
 ### :seven: Mutex Profiling
 
 ...
 
----
+-----
+
+### :eight: Clock Profiling
+
+...
+
+-----
 
 
 ## Quick Start 

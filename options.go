@@ -121,3 +121,13 @@ func WithMutexFraction(rate int) ProfileOption {
 		p.profileMode = MutexMode
 	}
 }
+
+// WithClockProfiling utilises wall clock profiling powered by
+// https://github.com/felixge/fgprof.  This allows you to profile
+// both CPU ON and OFF wait in tandem, painting a nice picture.
+// Go runtimes built in CPU profiler only displays cpu ON time.
+func WithClockProfiling() ProfileOption {
+	return func(p *Profiler) {
+		p.profileMode = ClockMode
+	}
+}

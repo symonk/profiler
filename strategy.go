@@ -4,6 +4,8 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"runtime/trace"
+
+	"github.com/felixge/fgprof"
 )
 
 // StrategyFunc is the custom type for an implementation
@@ -19,6 +21,7 @@ var StrategyMap = map[Mode]StrategyFunc{
 	GoroutineMode:    goroutineStrategyFn,
 	ThreadCreateMode: threadCreateStrategyFn,
 	TraceMode:        traceStrategyFn,
+	ClockMode:        clockStrategyFn,
 }
 
 // cpuStrategyFn handles configuring the cpu profiler and
@@ -32,7 +35,7 @@ func cpuStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	}
 	return func() {
 		pprof.StopCPUProfile()
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 	}, nil
 }
 
@@ -42,7 +45,7 @@ func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	runtime.MemProfileRate = p.memoryProfileRate
 	pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 		runtime.MemProfileRate = rate
 	}, nil
 }
@@ -53,7 +56,7 @@ func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	runtime.MemProfileRate = p.memoryProfileRate
 	pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 		runtime.MemProfileRate = rate
 	}, nil
 }
@@ -62,7 +65,7 @@ func mutexStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(MutexFileName)
 	pprof.Lookup("mutex").WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 	}, nil
 }
 
@@ -70,7 +73,7 @@ func blockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(BlockFileName)
 	pprof.Lookup("block").WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 	}, nil
 }
 
@@ -78,7 +81,7 @@ func goroutineStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(GoroutineFileName)
 	pprof.Lookup("goroutine").WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 	}, nil
 }
 
@@ -86,7 +89,7 @@ func threadCreateStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ThreadCreateFileName)
 	pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 	}, nil
 }
 
@@ -94,7 +97,15 @@ func traceStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(TraceFileName)
 	trace.Start(p.profileFile)
 	return func() {
-		defer p.profileFile.Close()
+		p.profileFile.Close()
 		trace.Stop()
+	}, nil
+}
+
+func clockStrategyFn(p *Profiler) (FinalizerFunc, error) {
+	p.SetProfileFile(ClockFileName)
+	fgprof.Start(p.profileFile, fgprof.FormatPprof)
+	return func() {
+		p.profileFile.Close()
 	}, nil
 }
