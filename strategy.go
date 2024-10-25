@@ -39,6 +39,7 @@ func cpuStrategyFn(p *Profiler) (FinalizerFunc, error) {
 func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
+	runtime.MemProfileRate = p.memoryProfileRate
 	pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
 	return func() {
 		defer p.profileFile.Close()
@@ -49,6 +50,7 @@ func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
+	runtime.MemProfileRate = p.memoryProfileRate
 	pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
 	return func() {
 		defer p.profileFile.Close()

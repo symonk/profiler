@@ -1,30 +1,30 @@
-##### Profiler
+## Profiler
 
 `profiler` is a utility library to easily enable various level of profiling for go programs.
 The various modes available are:
 
 -----
 
-## CPU Profiling
+##### CPU Profiling
 
 Profiling CPU can help identify areas of your code where most CPU cycle execution time is spent.  For
 programs with a lot of IO wait etc, the graph may not be extremely useful, trace may be of
 better benefit there.
 
-## Heap Profiling
+##### Heap Profiling
 
 Heap profiling reports memory allocation samples, useful for monitoring current and historical memory
 usage and to check for potential memory leaks in your program.  Heap profiling tracks the allocation
 sites for all live objects in the application memory and for all objects allocated since the program
 has started.  By default heap profiling will display live objects, scaled by size.
 
-## Alloc Profiling
+##### Alloc Profiling
 
 Alloc profiling is essentially the same as heap profiling except rather than the default of live objects
 scaled by size, it reports the `-alloc_space` data, that is the total number of bytes allocated since the
 program has began (including garbage collected bytes).
 
-## Block Profiling
+##### Block Profiling
 
 
 ## 
