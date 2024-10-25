@@ -6,6 +6,10 @@ assortment of options and configurations as well as various non stdlib options s
 wall clock option, which pieces together a single `.pprof` file which includes both cpu `ON` and `OFF`
 data.  A basic example for each of the profilers is outlined below.
 
+By default `profiler` will listen for `SIGTERM` & `SIGINT` in order to close out the pprof/trace files
+correctly, however in some cases this is undesirable.  If you would like full control of cleaning up
+then use the `WithoutSignalHandling()` functional option to any invocation of `.Start()`.
+
 -----
 
 ### :one: CPU Profiling
