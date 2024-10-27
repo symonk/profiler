@@ -1,6 +1,6 @@
 module github.com/symonk/profiler
 
-go 1.23.2
+go 1.23
 
 require (
 	github.com/felixge/fgprof v0.9.5
