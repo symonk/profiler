@@ -112,6 +112,7 @@ func main() {
 
 Thread profiling shows stack traces of code that caused new OS level threads to be created by the
 go scheduler.  This is implemented in this library but it has been broken since 2013.
+Should it be fixed in future or if you wish to use it now, consider it experimental.
 
 > [!CAUTION]
 > This has been broken since 2013, do not use it!
@@ -133,7 +134,25 @@ func main() {
 
 ### :six: Goroutine Profiling
 
-...
+The go runtime keeps track of all goroutines internally in a slice.  This tracks both `active` and 
+`dead` goroutines (dead goros are reused later if requested).  Active goroutines are routines waiting
+on `io`, `blocking` or `executing`.  Profiling goroutines causes a 'stop-the-world' event which is
+`o(n)` depending on how many goroutines you have so caution is advised when profiling goroutines
+at scale in production.
+
+```go
+package main
+
+import (
+    "github.com/symonk/profiler"
+)
+
+func main() {
+    defer profiler.Start(profiler.WithGoroutineProfiler()).Stop()
+    /* your code here */
+}
+
+```
 
 -----
 
