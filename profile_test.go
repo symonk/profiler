@@ -197,4 +197,3 @@ func emptyStdErr(t *testing.T, _, stderr string, _ int) {
 func emptyStdOut(t *testing.T, stdout, _ string, _ int) {
 	assert.Empty(t, stdout)
 }
-

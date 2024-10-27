@@ -44,7 +44,7 @@ func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
 	return func() {
-		pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
+		_ = pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
 		runtime.GC()
 		p.profileFile.Close()
 		runtime.MemProfileRate = rate
@@ -56,7 +56,7 @@ func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
 	return func() {
-		pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
+		_ = pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
 		runtime.GC()
 		p.profileFile.Close()
 		runtime.MemProfileRate = rate
@@ -65,7 +65,7 @@ func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 
 func mutexStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(MutexFileName)
-	pprof.Lookup("mutex").WriteTo(p.profileFile, 0)
+	_ = pprof.Lookup("mutex").WriteTo(p.profileFile, 0)
 	return func() {
 		p.profileFile.Close()
 	}, nil
@@ -76,7 +76,7 @@ func blockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	// for now, we do not allow customising the runtime.SetBlockProfileRate
 	// if it is useful in future, change is welcome here.
 	return func() {
-		pprof.Lookup("block").WriteTo(p.profileFile, 0)
+		_ = pprof.Lookup("block").WriteTo(p.profileFile, 0)
 		p.profileFile.Close()
 		runtime.SetBlockProfileRate(0)
 	}, nil
@@ -84,7 +84,7 @@ func blockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 
 func goroutineStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(GoroutineFileName)
-	pprof.Lookup("goroutine").WriteTo(p.profileFile, 0)
+	_ = pprof.Lookup("goroutine").WriteTo(p.profileFile, 0)
 	return func() {
 		p.profileFile.Close()
 	}, nil
@@ -93,7 +93,7 @@ func goroutineStrategyFn(p *Profiler) (FinalizerFunc, error) {
 func threadCreateStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ThreadCreateFileName)
 	return func() {
-		pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
+		_ = pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
 		p.profileFile.Close()
 	}, nil
 }
