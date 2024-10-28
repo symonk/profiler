@@ -160,7 +160,22 @@ func main() {
 
 Mutex profiling differs from block profiling in the sense that block profiling records how long 
 a goroutine took to acquire a `.Lock()` but the mutex profile tracks how long a goroutine was
-waiting for an `.Unlock()`.
+waiting for an `.Unlock()`. Contention is not recorded until the mutexes are unlocked, so again
+this is not viable for checking why a program is currently hanging/blocking 'now'.
+
+```go
+package main
+
+import (
+    "github.com/symonk/profiler"
+)
+
+func main() {
+    defer profiler.Start(profiler.WithMutexProfiler()).Stop()
+    /* your code here */
+}
+
+```
 
 -----
 
