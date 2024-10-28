@@ -85,8 +85,8 @@ operation.  The following events are recorded:
  * `select` operations
  * `channel send` operations
  * `channel receive` operations
- * `semacquire` operations (`sync => Mutex.Lock()`, `sync => RWMutex.RLock()`, `sync => RWMutex.Lock()`, `sync => WaitGroup.Wait()`)
- * `notify list` operations (`cond => Wait()`)
+ * `semacquire` operations (`sync -> Mutex.Lock()`, `sync -> RWMutex.RLock()`, `sync -> RWMutex.Lock()`, `sync -> WaitGroup.Wait()`)
+ * `notify list` operations (`sync -> Conf.Wait()`)
 
 > [!CAUTION]
 > Block profiles do not include time in sleep, IO wait etc and block events are only recorded 
