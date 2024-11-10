@@ -181,7 +181,21 @@ func main() {
 
 ### :eight: Clock Profiling
 
-...
+Clock profiling allows monitoring of both `off` and `on` CPU time collectively, this paints a nice picture
+of where CPU cycles are spent, but also where IO perhaps is causing delays too.
+
+```go
+package main
+
+import (
+    "github.com/symonk/profiler"
+)
+
+func main() {
+    defer profiler.Start(profiler.WithClockProfiling()).Stop()
+    /* your code here */
+}
+```
 
 -----
 
