@@ -111,7 +111,7 @@ func clockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ClockFileName)
 	teardown := fgprof.Start(p.profileFile, fgprof.FormatPprof)
 	return func() {
-		p.profileFile.Close()
 		teardown()
+		p.profileFile.Close()
 	}, nil
 }
