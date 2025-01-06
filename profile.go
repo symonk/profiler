@@ -29,7 +29,7 @@ const (
 
 // FinalizerFunc is a function that is invokved during the teardown period
 // of the profiling instance.
-type FinalizerFunc func()
+type FinalizerFunc func() error
 
 // CallbackFunc is a function that can be supplied with the
 // WithCallback option to be executed when the profiling instance
@@ -90,7 +90,9 @@ func (p *Profiler) Stop() {
 	if !atomic.CompareAndSwapUint32(&profilingActive, 1, 0) {
 		die("profiler instance was not started")
 	}
-	p.finalizer()
+	if err := p.finalizer(); err != nil {
+		die(err.Error())
+	}
 	if p.callback != nil {
 		p.callback(p)
 	}

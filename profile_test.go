@@ -21,7 +21,11 @@ func TestProfilesEnabledExpectedOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(storage)
+	defer func() {
+		if err := os.RemoveAll(storage); err != nil {
+			t.Error("problem removing file", err)
+		}
+	}()
 	tests := map[string]struct {
 		source string
 		checks []CheckFunc
@@ -102,23 +106,23 @@ func createTempTestFile(t *testing.T, source string) (string, func()) {
 go 1.23.2
 require github.com/symonk/profiler v0.0.0-20241021143805-788e1dbe92a9
 `
-	os.WriteFile(mod, []byte(contents), 0644)
+	if err := os.WriteFile(mod, []byte(contents), 0644); err != nil {
+		t.Error("failed to write file", err)
+	}
 
 	// create the appropriate mod file etc
-	return main, func() { defer os.RemoveAll(dir) }
+	return main, func() {
+		defer func() {
+			if err := os.RemoveAll(dir); err != nil {
+				t.Error("failed to remove dir", err)
+			}
+		}()
+	}
 }
 
 // Check function implementations for asserting against the responses
 func exitedZero(t *testing.T, _, _ string, code int) {
 	assert.Zero(t, code)
-}
-
-// patternMatchLines checks that the lines in stdout matched
-func stdOutOutMatchLines(patterns ...string) CheckFunc {
-	return func(t *testing.T, stdout, stderr string, exit int) {
-		assert.NotEmpty(t, stdout)
-		patternMatchLines(t, stdout, patterns...)
-	}
 }
 
 // patternMatchLines checks that the lines in stderr matched
@@ -154,10 +158,6 @@ func patternMatchLines(t *testing.T, input string, patterns ...string) bool {
 
 	t.Fatalf("expected all patterns to be matched, but the following were not: %v", seen)
 	return false
-}
-
-func emptyStdErr(t *testing.T, _, stderr string, _ int) {
-	assert.Empty(t, stderr)
 }
 
 func emptyStdOut(t *testing.T, stdout, _ string, _ int) {

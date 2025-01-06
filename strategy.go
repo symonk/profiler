@@ -33,9 +33,10 @@ func cpuStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	if err := pprof.StartCPUProfile(p.profileFile); err != nil {
 		return nil, err
 	}
-	return func() {
+	return func() (err error) {
+		defer func() { err = p.profileFile.Close() }()
 		pprof.StopCPUProfile()
-		p.profileFile.Close()
+		return nil
 	}, nil
 }
 
@@ -43,11 +44,12 @@ func heapStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
-	return func() {
+	return func() (err error) {
+		defer func() { runtime.MemProfileRate = rate }()
+		defer func() { err = p.profileFile.Close() }()
 		_ = pprof.Lookup(heapProfileName).WriteTo(p.profileFile, 0)
 		runtime.GC()
-		p.profileFile.Close()
-		runtime.MemProfileRate = rate
+		return nil
 	}, nil
 }
 
@@ -55,19 +57,20 @@ func allocStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	rate := runtime.MemProfileRate
 	p.SetProfileFile(MemoryFileName)
 	runtime.MemProfileRate = p.memoryProfileRate
-	return func() {
+	return func() (err error) {
+		defer func() { runtime.MemProfileRate = rate }()
+		defer func() { err = p.profileFile.Close() }()
 		_ = pprof.Lookup(allocProfileName).WriteTo(p.profileFile, 0)
 		runtime.GC()
-		p.profileFile.Close()
-		runtime.MemProfileRate = rate
+		return nil
 	}, nil
 }
 
 func mutexStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(MutexFileName)
 	_ = pprof.Lookup("mutex").WriteTo(p.profileFile, 0)
-	return func() {
-		p.profileFile.Close()
+	return func() error {
+		return p.profileFile.Close()
 	}, nil
 }
 
@@ -75,43 +78,46 @@ func blockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(BlockFileName)
 	// for now, we do not allow customising the runtime.SetBlockProfileRate
 	// if it is useful in future, change is welcome here.
-	return func() {
+	return func() error {
+		defer runtime.SetBlockProfileRate(0)
 		_ = pprof.Lookup("block").WriteTo(p.profileFile, 0)
-		p.profileFile.Close()
-		runtime.SetBlockProfileRate(0)
+		return p.profileFile.Close()
 	}, nil
 }
 
 func goroutineStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(GoroutineFileName)
 	_ = pprof.Lookup("goroutine").WriteTo(p.profileFile, 0)
-	return func() {
-		p.profileFile.Close()
+	return func() error {
+		return p.profileFile.Close()
 	}, nil
 }
 
 func threadCreateStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ThreadCreateFileName)
-	return func() {
+	return func() (err error) {
+		defer func() { err = p.profileFile.Close() }()
 		_ = pprof.Lookup("threadcreate").WriteTo(p.profileFile, 0)
-		p.profileFile.Close()
+		return nil
 	}, nil
 }
 
 func traceStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(TraceFileName)
-	trace.Start(p.profileFile)
-	return func() {
-		p.profileFile.Close()
+	if err := trace.Start(p.profileFile); err != nil {
+		return nil, err
+	}
+	return func() error {
 		trace.Stop()
+		return nil
 	}, nil
 }
 
 func clockStrategyFn(p *Profiler) (FinalizerFunc, error) {
 	p.SetProfileFile(ClockFileName)
 	teardown := fgprof.Start(p.profileFile, fgprof.FormatPprof)
-	return func() {
-		teardown()
-		p.profileFile.Close()
+	return func() (err error) {
+		defer func() { err = p.profileFile.Close() }()
+		return teardown()
 	}, nil
 }
