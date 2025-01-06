@@ -120,6 +120,10 @@ require github.com/symonk/profiler v0.0.0-20241021143805-788e1dbe92a9
 	}
 }
 
+func TestWithCustomPort(t *testing.T) {
+	t.Skip("not implemented yet")
+}
+
 // Check function implementations for asserting against the responses
 func exitedZero(t *testing.T, _, _ string, code int) {
 	assert.Zero(t, code)

@@ -145,3 +145,16 @@ func WithClockProfiling() ProfileOption {
 		p.profileMode = ClockMode
 	}
 }
+
+// WithPort allows providing an arbitrary port to run the http
+// handlers for if utilising a profile mode that supports it.
+//
+// The supported modes are:
+// CPU Profiling
+// ...
+// TBC...
+func WithPort(port int) ProfileOption {
+	return func(p *Profiler) {
+		p.port = port
+	}
+}

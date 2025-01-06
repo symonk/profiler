@@ -1,6 +1,7 @@
 package profiler
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -68,6 +69,7 @@ type Profiler struct {
 	finalizer         FinalizerFunc
 	live              bool
 	interrupted       bool
+	port              int
 }
 
 // New returns a new instance of the Profiler.
@@ -76,6 +78,7 @@ func New(options ...ProfileOption) *Profiler {
 		profileFolder:     ".",
 		signalHandling:    true,
 		memoryProfileRate: runtime.MemProfileRate,
+		port:              8080,
 	}
 	for _, opt := range options {
 		opt(p)
@@ -105,7 +108,7 @@ func (p *Profiler) Stop() {
 	// in a suppressed mode.
 	extension := filepath.Ext(absPath)
 	wasTrace := strings.HasSuffix(absPath, ".out")
-	cmd := "go tool pprof -http :8080"
+	cmd := fmt.Sprintf("go tool pprof -http :%d", p.port)
 	if wasTrace {
 		cmd = "go tool trace"
 	}
