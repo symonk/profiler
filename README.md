@@ -211,7 +211,7 @@ func main() {
 * `WithMemoryProfilingRate` => Sets the profiling rate for memory related profiling samples.
 * `WithMutexFraction` => Sets the fraction rate used in conjunction with mutex profiling.
 * `WithProfileFileLocation` => Sets the custom folder location for the pprof / trace files. 
-* `WithQuietOutput` => Suppresses writing to stdout/printing.
+* `WithQuietOutput` => Suppresses writing to stderr/printing.
 * `WithRealTimeData` => Spins a http server for the lifetime of the profiling for real curl/fetching if desired.
 * `WithThreadProfiler` => Enables the os thread creation profiling.
 * `WithTracing` => Enables the tracing.
