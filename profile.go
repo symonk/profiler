@@ -107,14 +107,14 @@ func (p *Profiler) Stop() {
 	if wasTrace {
 		cmd = "go tool trace"
 	}
-	p.Report("profiling completed.  You can find the %s file at %s", extension, absPath)
-	p.Report("to view the profile, run `%s %s`", cmd, absPath)
+	p.report("profiling completed.  You can find the %s file at %s", extension, absPath)
+	p.report("to view the profile, run `%s %s`", cmd, absPath)
 	if p.interrupted {
-		p.Report("[warning] profiling was interrupted, data may be incomplete")
+		p.report("[warning] profiling was interrupted, data may be incomplete")
 	}
 	if !wasTrace {
-		p.Report("port can be any ephemeral port you wish to use.")
-		p.Report("Graph interpretation is outlined here: https://github.com/google/pprof/blob/main/doc/README.md#graphical-reports")
+		p.report("port can be any ephemeral port you wish to use.")
+		p.report("Graph interpretation is outlined here: https://github.com/google/pprof/blob/main/doc/README.md#graphical-reports")
 	}
 }
 
@@ -129,10 +129,10 @@ func (p *Profiler) SetProfileFile(name string) {
 	p.profileFile = profileFile
 }
 
-// Report writes a formatted log statement to stdout.
+// report writes a formatted log statement to stderr.
 // If the WithSuppressedOutput option is provided, this
 // will be a no-op.
-func (p *Profiler) Report(format string, args ...any) {
+func (p *Profiler) report(format string, args ...any) {
 	if !p.quiet {
 		log.Printf(format, args...)
 	}
@@ -173,7 +173,7 @@ func Start(options ...ProfileOption) *Profiler {
 			ch := make(chan os.Signal, 1)
 			signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 			<-ch
-			p.Report("sigterm received, performing tear down")
+			p.report("sigterm received, performing tear down")
 			p.interrupted = true
 			p.Stop()
 			os.Exit(0)

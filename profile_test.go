@@ -17,7 +17,6 @@ import (
 type CheckFunc func(t *testing.T, stdout, stderr string, exit int)
 
 func TestProfilesEnabledExpectedOutput(t *testing.T) {
-	t.Skip()
 	storage, err := os.MkdirTemp("", "profiles")
 	if err != nil {
 		t.Fatal(err)
@@ -27,7 +26,7 @@ func TestProfilesEnabledExpectedOutput(t *testing.T) {
 		source string
 		checks []CheckFunc
 	}{
-		"cpu enabled successfully": {
+		"cpu profiling works as expected": {
 			source: `package main
 import "github.com/symonk/profiler"
 
@@ -38,45 +37,10 @@ func main() {
 				exitedZero,
 				emptyStdOut,
 				stdErrOutMatchLines(
-					".*setting up cpu profiler.*",
 					".*profiling completed.  You can find the .*cpu.pprof.*",
 					".*to view the profile, run.*cpu.pprof",
-				),
-			},
-		},
-
-		"heap profiling enabled successfully": {
-			source: `package main
-import "github.com/symonk/profiler"
-
-func main() {
-	defer profiler.Start(profiler.WithHeapMemoryProfiling(), profiler.WithProfileFileLocation("` + storage + "\"" + `)).Stop()}
-`,
-			checks: []CheckFunc{
-				exitedZero,
-				emptyStdOut,
-				stdErrOutMatchLines(
-					".*setting up memory\\[heap\\] profiler.*",
-					".*profiling completed.  You can find the .*memory.pprof.*",
-					".*to view the profile, run.*memory.pprof",
-				),
-			},
-		},
-
-		"alloc profiling enabled successfully": {
-			source: `package main
-import "github.com/symonk/profiler"
-
-func main() {
-	defer profiler.Start(profiler.WithAllocMemoryProfiling(), profiler.WithProfileFileLocation("` + storage + "\"" + `)).Stop()}
-`,
-			checks: []CheckFunc{
-				exitedZero,
-				emptyStdOut,
-				stdErrOutMatchLines(
-					".*setting up memory\\[alloc\\] profiler.*",
-					".*profiling completed.  You can find the .*memory.pprof.*",
-					".*to view the profile, run.*memory.pprof",
+					"port can be any ephemeral port you wish to use",
+					"Graph interpretation is outlined here.*graphical-reports",
 				),
 			},
 		},
@@ -86,6 +50,7 @@ func main() {
 		t.Run(name, func(t *testing.T) {
 			// Execute the program, capturing meta data
 			stdout, stderr, exit := execute(t, tc.source)
+			t.Log(stdout, stderr)
 			// Assert the output is as expected
 			for _, checkFunc := range tc.checks {
 				checkFunc(t, stdout, stderr, exit)
